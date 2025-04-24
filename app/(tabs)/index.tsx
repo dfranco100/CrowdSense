@@ -10,14 +10,6 @@ import { useEffect } from 'react';
 
 export default function Index() {
 
-useEffect(() => {
-  (async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      console.log('Permission to access location was denied');
-    }
-  })();
-}, []);
   return (
     <View className="flex-1 bg-primary">
         <Image source={images.bg} className="absolute w-full z-0"/>
