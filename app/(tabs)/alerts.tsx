@@ -1,4 +1,4 @@
-import { View, Text, Image, FlatList } from 'react-native'
+import { View, Text, Image, LayoutAnimation } from 'react-native'
 import React, {useState} from 'react'
 import { images } from '@/constants/images'
 import { SwipeListView } from 'react-native-swipe-list-view'
@@ -20,9 +20,11 @@ const alertList = [
     
     const [notifications, setNotifications] = useState(alertList);
 
-    const handleDelete = (rowKey: string) => {
-        const newData = notifications.filter(item => item.id !== rowKey);
-        setNotifications(newData);
+    const handleDelete = (id: string) => {
+       // const newData = notifications.filter(item => item.id !== rowKey);
+       // setNotifications(newData);
+       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
       };
 
       return (
@@ -37,7 +39,7 @@ const alertList = [
                 <View className="w-full flex-row justify-center mt-20 items-center">
                   <Image source={images.logo} className="w-full h-16 mb-2 mx-auto rounded-xl" />
                 </View>
-                <Text className="text-2xl font-bold text-black mb-4 text-center z-10">Notifications</Text>
+                <Text className="text-2xl font-bold text-white mb-4 text-center z-10">Notifications</Text>
               </>
             }
             renderItem={({ item }) => (
@@ -48,7 +50,7 @@ const alertList = [
               </View>
             )}
             renderHiddenItem={({ item }) => (
-              <View className="flex-1 justify-center items-end pr-5 bg-red-600 rounded-xl my-1">
+              <View className="flex-1 justify-center items-end pr-5 bg-red-600 rounded-xl mb-3 mt-2">
                 <Text
                   className="text-white font-bold"
                   onPress={() => handleDelete(item.id)}
