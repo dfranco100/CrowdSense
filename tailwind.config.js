@@ -4,8 +4,14 @@ module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#284878',
+        secondary: '#808080'
+      }
+    },
   },
   plugins: [],
 }
 
+///Users/dfranco/Desktop/Senior_project/CrowdSense/app
