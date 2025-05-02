@@ -1,9 +1,41 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, Image, Button, Alert } from 'react-native';
 import { images } from '@/constants/images';
+import { auth } from '@/firebaseConfig';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
+
+
+
+
 
 const AuthScreen = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async () => {
+    if (!email || !password) {
+      Alert.alert('Missing Fields', 'Please enter both email and password');
+      return;
+    }
+
+    try {
+      if (isSignUp) {
+        await createUserWithEmailAndPassword(auth, email, password);
+        Alert.alert('Account Created', 'You can now sign in.');
+        setIsSignUp(false);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+        Alert.alert('Success', 'You are now signed in!');
+        
+      }
+    } catch (error: any) {
+      Alert.alert('Auth Error', error.message);
+    }
+  };
 
   return (
     <View className="flex-1 bg-white justify-center  ">
@@ -24,15 +56,22 @@ const AuthScreen = () => {
           placeholder="Email"
           className="bg-white border border-gray-300 p-3 rounded-lg mb-4 text-gray-800"
           placeholderTextColor="#A0A0A0"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
         />
         <TextInput
           placeholder="Password"
           secureTextEntry
           className="bg-white border border-gray-300 p-3 rounded-lg mb-6 text-gray-800"
           placeholderTextColor="#A0A0A0"
+          value={password}
+          onChangeText={setPassword}
         />
 
-        <Pressable className="bg-primary py-3 rounded-lg items-center mb-3">
+        <Pressable className="bg-primary py-3 rounded-lg items-center mb-3"
+          onPress={handleSubmit}
+        >
           <Text className="text-white font-semibold">
             {isSignUp ? 'Create Account' : 'Sign In'}
           </Text>
