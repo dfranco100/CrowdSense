@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRouter, Link } from 'expo-router';
 import { View, Text, TextInput, Pressable, Image, Button, Alert } from 'react-native';
 import { images } from '@/constants/images';
 import { auth } from '@/firebaseConfig';
@@ -26,10 +27,12 @@ const AuthScreen = () => {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
         Alert.alert('Account Created', 'You can now sign in.');
+        
         setIsSignUp(false);
       } else {
         await signInWithEmailAndPassword(auth, email, password);
         Alert.alert('Success', 'You are now signed in!');
+        
         
       }
     } catch (error: any) {
@@ -68,14 +71,15 @@ const AuthScreen = () => {
           value={password}
           onChangeText={setPassword}
         />
-
-        <Pressable className="bg-primary py-3 rounded-lg items-center mb-3"
-          onPress={handleSubmit}
-        >
+        <Link href="/" asChild>
+          <Pressable className="bg-primary py-3 rounded-lg items-center mb-3"
+            onPress={handleSubmit}
+          >
           <Text className="text-white font-semibold">
             {isSignUp ? 'Create Account' : 'Sign In'}
           </Text>
-        </Pressable>
+          </Pressable>
+        </Link>
 
         <Pressable onPress={() => setIsSignUp(!isSignUp)} className="items-center mt-2">
           <Text className="text-gray-500">
