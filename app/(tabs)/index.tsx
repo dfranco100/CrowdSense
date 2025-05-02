@@ -1,10 +1,8 @@
-import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-import { Image, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View, Alert } from "react-native";
 import MapComponent from "@/components/Map";
 import * as Location from 'expo-location';
 import { useEffect } from 'react';
-import ButtonRow from "@/components/ButtonRow";
 import CrowdButtons from "@/components/CrowdButtons";
 import { db, auth, serverTimestamp, arrayUnion, setDoc, doc } from '@/firebaseConfig';
 import { Timestamp } from 'firebase/firestore';
@@ -16,13 +14,17 @@ import { Timestamp } from 'firebase/firestore';
 export default function Index() {
   const submitCrowdReport = async (densityLevel: 'light' | 'crowded' | 'very_crowded') => {
     const userId = auth.currentUser?.uid;
-    const areaId = 'memorial'; // Change this to your actual area ID
+    const areaId = 'market_street'; // Change this to your actual area ID
     const areaDocRef = doc(db, 'crowdReports', areaId);
   
+    if (!userId) {
+      Alert.alert('Authentication Error', 'You must be logged in to submit a report.');
+      return;
+    }
     const polygonCoordinates = [  // Use actual coordinates for your area
-      { latitude: 40.785091, longitude: -73.968285 },
-      { latitude: 40.786, longitude: -73.967 },
-      { latitude: 40.784, longitude: -73.966 },
+      { "latitude": 37.77390554913351, "longitude": -122.41419100747052 },
+      { "latitude": 37.77393819758965, "longitude": -122.42420034636696 },
+      { "latitude": 37.78511400512986, "longitude": -122.42120347731895 }
     ];
   
     try {

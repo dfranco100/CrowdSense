@@ -3,26 +3,35 @@ import { View, Text } from 'react-native';
 import MapView, { Marker, Region, Polygon } from 'react-native-maps';
 import * as Location from 'expo-location';
 import areas from '@/areas.json';
+import {db} from '@/firebaseConfig';
+import { collection, onSnapshot } from 'firebase/firestore';
+
+type AreaWithDensity = {
+  id: string;
+  name: string;
+  density: 'light' | 'crowded' | 'very_crowded';
+  coordinates: { latitude: number; longitude: number }[];
+};
 
 const fallbackRegion: Region = {
     latitude: 37.7749,        // San Francisco as default
     longitude: -122.4194,
     latitudeDelta: 0.05,
     longitudeDelta: 0.05,
-  };
+};
 
-  const densityColors = {
+const densityColors = {
     light: 'rgba(0,255,0,0.3)',
     crowded: 'rgba(255,255,0,0.4)',
     very_crowded: 'rgba(255,0,0,0.4)',
-  };
-
-  
+};
 
 
-  const MapComponent = () => {
+const MapComponent = () => {
     const [region, setRegion] = useState<Region | null>(null);
+    const [areas, setAreas] = useState<AreaWithDensity[]>([]);
     const [locationDenied, setLocationDenied] = useState(false);
+    const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   
     useEffect(() => {
       (async () => {
@@ -35,6 +44,8 @@ const fallbackRegion: Region = {
         }
   
         let location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+        setUserLocation({ latitude, longitude });
         setRegion({
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
@@ -43,7 +54,23 @@ const fallbackRegion: Region = {
         });
       })();
     }, []);
+    useEffect(() => {
+      const unsubscribe = onSnapshot(collection(db, 'crowdReports'), (snapshot) => {
+        const updatedAreas: AreaWithDensity[] = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            name: doc.id.replace(/_/g, ' '),
+            coordinates: data.coordinates,
+            density: data.density ?? 'light',
+          };
+        });
+        setAreas(updatedAreas);
+      });
   
+      return () => unsubscribe();
+    }, []);
+
     if (!region) {
       return (
         <View className="h-72 w-full justify-center items-center">
